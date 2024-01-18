@@ -1,0 +1,12 @@
+if TARGET_VITA
+
+config SYS_SOC
+	default "vita"
+
+config SYS_BOARD
+	default "vita"
+
+config SYS_CONFIG_NAME
+	default "vita"
+
+endif
