@@ -25,12 +25,17 @@ choice
 		  options; the platform specific options are deprecated
 		  and will be soon removed.
 
+	config DEBUG_LL_UART_VITA
+		bool "Low-level debugging via Sony PlayStation Vita's UART"
+		depends on TARGET_VITA
+
 endchoice
 
 config DEBUG_LL_INCLUDE
 	string
 	depends on DEBUG_LL
 	default "debug/8250.S" if DEBUG_LL_UART_8250 || DEBUG_UART_8250
+	default "debug/vita.S" if DEBUG_LL_UART_VITA
 	default "mach/debug-macro.S"
 
 # Compatibility options for 8250
@@ -39,7 +44,7 @@ config DEBUG_UART_8250
 
 config DEBUG_UART_PHYS
 	hex "Physical base address of debug UART"
-	depends on DEBUG_LL_UART_8250 || DEBUG_UART_8250
+	depends on DEBUG_LL_UART_8250 || DEBUG_UART_8250 || DEBUG_LL_UART_VITA
 
 # This is not used in U-Boot
 config DEBUG_UART_VIRT

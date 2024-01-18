@@ -1,0 +1,17 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
+#ifndef _UART_H_
+#define _UART_H_
+
+#define VITA_UART_BASE		0xE2030000
+#define VITA_UARTCLKGEN_BASE	0xE3105000
+
+#define VITA_UARTi_BASE(i)		(UART_REG_BASE_ADDR + (i) * 0x10000)
+#define VITA_UARTCLKGENi_BASE(i)	(UARTCLKGEN_REG_BASE_ADDR + (i) * 4)
+
+#define VITA_UART_STATUS	0x28
+#define VITA_UART_WRITE_FIFO	0x70
+
+#define VITA_UART_STATUS_TXREADY	(1 << 8)
+#define VITA_UART_STATUS_DEVREADY	(1 << 9)
+
+#endif	/* UART_H */
