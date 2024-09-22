@@ -37,6 +37,62 @@
 #endif
 
 reset:
+
+#define UART_REG_BASE_ADDR		0xE2030000
+#define UARTCLKGEN_REG_BASE_ADDR	0xE3105000
+
+	mov r0, #1
+	ldr r1, =0xE3102000  @ PERVASIVE_GATE_BASE_ADDR
+	ldr r2, [r1, #0x120] @ UART
+	orr r2, r0
+	str r2, [r1, #0x120]
+	dmb
+
+	ldr r1, =0xE3101000  @ PERVASIVE_RESET_BASE_ADDR
+	ldr r2, [r1, #0x120] @ UART
+	bic r2, r0
+	str r2, [r1, #0x120]
+	dmb
+
+	@ Init UART0
+	ldr r1, =UART_REG_BASE_ADDR
+	mov r0, #0
+	str r0, [r1, #0x04]
+	ldr r2, =UARTCLKGEN_REG_BASE_ADDR
+	ldr r0, =0x1001A @ Baudrate = 115200
+	str r0, [r2]
+	mov r0, #3
+	str r0, [r1, #8 * 4]
+	mov r0, #1
+	str r0, [r1, #4 * 4]
+	mov r0, #0
+	str r0, [r1, #0xC * 4]
+	mov r0, #0x303
+	str r0, [r1, #0x18 * 4]
+	mov r0, #0
+	str r0, [r1, #0x10 * 4]
+	str r0, [r1, #0x14 * 4]
+	ldr r0, =0x10001
+	str r0, [r1, #0x19 * 4]
+	mov r0, #1
+	str r0, [r1, #0x04]
+	dmb
+
+	@ Wait ready
+uart_wait_ready:
+	ldr r0, [r1, #0xA * 4]
+	tst r0, #0x100
+	bne uart_wait_ready_cont
+	dmb
+	b uart_wait_ready
+uart_wait_ready_cont:
+
+
+
+	mov r0, #'b'
+	bl printch
+hang: b hang
+
 	/* Allow the board to save important registers */
 	b	save_boot_params
 save_boot_params_ret:

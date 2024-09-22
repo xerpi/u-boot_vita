@@ -1724,6 +1724,38 @@ int fdtdec_setup(void)
 		ret = fdtdec_board_setup(gd->fdt_blob);
 	oftree_reset();
 
+
+	if (ret) {
+asm volatile(
+" \
+	mov r0, #1\n\
+	ldr r1, =0xE3102000  @ PERVASIVE_GATE_BASE_ADDR\n\
+	ldr r2, [r1, #0x100] @ GPIO\n\
+	orr r2, r0\n\
+	str r2, [r1, #0x100]\n\
+	dmb\n\
+\n\
+	ldr r1, =0xE3101000  @ PERVASIVE_RESET_BASE_ADDR\n\
+	ldr r2, [r1, #0x100] @ GPIO\n\
+	bic r2, r0\n\
+	str r2, [r1, #0x100]\n\
+	dmb\n\
+\n\
+	mov r0, #(1 << 6)   @ GPIO_PORT_GAMECARD_LED\n\
+	ldr r1, =0xE20A0000 @ GPIO0_BASE_ADDR\n\
+	ldr r2, [r1, #0x00] @ GPIO_DIRECTION\n\
+	orr r2, r0\n\
+	str r2, [r1, #0x00]\n\
+	dmb\n\
+\n\
+	str r2, [r1, #0x08] @ GPIO_SET\n\
+	ldr r2, [r1, #0x34] @ GPIO_READ_LATCH\n\
+	dsb\n\
+\n\
+kk:\n\
+	b kk");
+	}
+
 	return ret;
 }
 
